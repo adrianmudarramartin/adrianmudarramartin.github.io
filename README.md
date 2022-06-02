@@ -8,7 +8,7 @@
         multiple files to be chosen:
     </h3>
   
-    <form action="/action_page.php" 
+    <form action="upload_script.py" 
         enctype="multipart/form-data">
   
         <label for="myfile">Select a file:</label>
