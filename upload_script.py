@@ -1,9 +1,25 @@
-import os
-fi = form['filename']
+from flask import Flask, render_template, request
+from werkzeug.utils import secure_filename
+import ctypes, sys
 
-if fi.filename:
-	# This code will strip the leading absolute path from your file-name
-	fil = os.path.basename(fi.filename)
-	# open for reading & writing the file into the server
-	open(fn, 'wb').write(fi.file.read())
-    print('cock')
+
+app = Flask(__name__)
+app.config['IMAGE_UPLOADS'] = 'C:/Users/Usuario/Desktop/Proyectos/adrianmudarramartin.github.io/Images'
+
+@app.route("/", methods=['GET', 'POST'])
+def home():
+	if request.method == "POST":
+		print(request.files)
+		image = request.files['file']
+		filename = secure_filename(image.filename)
+		image.save(app.config['IMAGE_UPLOADS'])
+		return render_template("webpage.htm")
+
+	return render_template("webpage.htm")
+
+@app.route("/Fajardo")
+def fajardo():
+	return "Puto Fajardo qué buen coche se ha comprado"
+
+if __name__ == "__main__":
+	app.run(debug=True)
