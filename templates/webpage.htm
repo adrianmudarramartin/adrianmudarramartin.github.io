@@ -9,10 +9,14 @@
 <img src="https://spinoff.ugr.es/media/cache/f4/c5/f4c51e95f0844ff5ad1ff4ef22ae4d78.jpg">
 <body style="background-color:#B1FA93;">
 <p style="color:#FEFEFE;">
-<form action="/" 
-        enctype="multipart/form-data"
-         method="post">
-  
+
+<form enctype="multipart/form-data"
+         method="POST">
+  	<label for="type">Tipo de archivo:</label>
+	<select name="type" id="type">
+		<option value="picture">Foto(s)</option>
+		<option value="dispatch">Parte de inspección</option>
+	</select>
         <label for="file">Archivos a adjuntar:</label>
   
         <input type="file" id="file" 
