@@ -1,29 +1,42 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title><font color="green"<b><i>Prueba Mantenimiento</i></b></font></title>
-</head>
+<head></head>
 <body>
-<h1>Prueba para crear una página web de Mantenimiento Greening</h1>
-<p> El objetivo es crear desplegables en la página donde subir los documentos, fotos,...,etc.</p>
-<img src="https://spinoff.ugr.es/media/cache/f4/c5/f4c51e95f0844ff5ad1ff4ef22ae4d78.jpg">
-<body style="background-color:#B1FA93;">
-<p style="color:#FEFEFE;">
-
-<form enctype="multipart/form-data"
-         method="POST">
-  	<label for="type">Tipo de archivo:</label>
-	<select name="type" id="type">
-		<option value="picture">Foto(s)</option>
-		<option value="dispatch">Parte de inspección</option>
-	</select>
+    <body style="background-color:#B1FA93;">
+    <p style="color:#FEFEFE;">
+    <h1></h1>
+    
+    <img src="https://spinoff.ugr.es/media/cache/f4/c5/f4c51e95f0844ff5ad1ff4ef22ae4d78.jpg">
+    <p></p>
+    <form enctype="multipart/form-data" method="POST">
+	    </select>
         <label for="file">Archivos a adjuntar:</label>
-  
-        <input type="file" id="file" 
-            name="file" multiple="multiple" />
-          
+        <input type="file" id="file" name="file" multiple="multiple" />
         <br /><br />
-      
-        <input type="submit" value="Subir"/>
+        <p></p>
+        <label for="plant">Instalación fotovoltaica:</label>
+        <select name="plant" id="plant" onchange="check()">
+            <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
+        </select>
+        <p></p>
+        <label for="type">Tipo de archivo:</label>
+        <select name="type" id="type" onchange="check()">
+            <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
+            <option value="picture">Foto(s)</option>
+            <option value="dispatch">Parte de inspección</option>
+        </select>
+        <p></p>
+        <input type="submit" id="submit" value="Subir" disabled/>
+    </form>
+    
+    <script>
+        function check() {
+            if((document.getElementById("type").value === '' || document.getElementById("plant").value === '')) {
+                document.getElementById("submit").setAttribute("disabled","disabled");;
+            } else {
+                document.getElementById("submit").removeAttribute("disabled");;
+            }
+        }
+    </script>
 </body>
 </html>

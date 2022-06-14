@@ -7,7 +7,7 @@ os.chdir("..")
 credentials_dict = {'AMM': '1234'}
 
 app = Flask(__name__)
-app.config['IMAGE_UPLOADS'] = 'C:/Users/Usuario/Desktop/Proyectos/adrianmudarramartin.github.io/Files'
+app.config['FILE_UPLOADS'] = 'C:/Users/Usuario/Desktop/Proyectos/adrianmudarramartin.github.io/Files'
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
@@ -32,7 +32,7 @@ def home():
 		for file in request.files.getlist('file'):
 			#print(file)
 			filename = secure_filename(file.filename)
-			file.save(app.config['IMAGE_UPLOADS']+'/'+filename)
+			file.save(app.config['FILE_UPLOADS']+'/'+filename)
 	return render_template("webpage.htm")
 
 @app.route("/Fajardo")
