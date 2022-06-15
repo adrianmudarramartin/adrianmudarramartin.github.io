@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+    <body style="background-color:#B1FA93;">
+    <p style="color:#FEFEFE;">
+    <h1></h1>
+    
+    <img src="https://spinoff.ugr.es/media/cache/f4/c5/f4c51e95f0844ff5ad1ff4ef22ae4d78.jpg">
+    <p></p>
+    <form action="">
+        <label for="plant">Seleccione una incidencia para abrir:</label>
+        <select name="plant" id="plant" onchange="check()">
+            <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
+            {% for plant in plant_list %}
+            <option value={{ plant }}>{{ plant }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" id="submit" value="Abrir caso" disabled/>
+    </form>
+    
+    <script>
+        function check() {
+            if((document.getElementById("plant").value === '')) {
+                document.getElementById("submit").setAttribute("disabled","disabled");;
+            } else {
+                document.getElementById("submit").removeAttribute("disabled");;
+            }
+        }
+    </script>
+</body>
+</html>
