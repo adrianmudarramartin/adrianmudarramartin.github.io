@@ -18,17 +18,17 @@
         <input type="file" id="file" name="file" multiple="multiple" />
         <br /><br />
         <p></p>
-        <label for="plant">Instalación fotovoltaica:</label>
-        <select name="plant" id="plant" onchange="check()">
+        <label for="Planta">Instalación fotovoltaica:</label>
+        <select name="Planta" id="Planta" onchange="check()">
             <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
-            <option value="picture">Prueba</option>
+            <option value="Prueba">Prueba</option>
         </select>
         <p></p>
-        <label for="type">Tipo de archivo:</label>
-        <select name="type" id="type" onchange="check()">
+        <label for="Tipo">Tipo de archivo:</label>
+        <select name="Tipo" id="Tipo" onchange="check()">
             <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
-            <option value="picture">Foto(s)</option>
-            <option value="dispatch">Parte de inspección</option>
+            <option value="Foto">Foto(s)</option>
+            <option value="Parte">Parte de inspección</option>
         </select>
         <p></p>
         <input type="submit" id="submit" value="Subir" disabled/>
@@ -36,7 +36,7 @@
     
     <script>
         function check() {
-            if((document.getElementById("type").value === '' || document.getElementById("plant").value === '')) {
+            if((document.getElementById("Tipo").value === '' || document.getElementById("Planta").value === '')) {
                 document.getElementById("submit").setAttribute("disabled","disabled");;
             } else {
                 document.getElementById("submit").removeAttribute("disabled");;

@@ -1,11 +1,19 @@
+from multiprocessing import connection
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
+import sqlite3
 import asana
 import os
 
+con = sqlite3.connect('Database.db', check_same_thread=False)
+cursor = con.cursor() 
+cursor.execute('''CREATE TABLE IF NOT EXISTS Users (ID_Usuario PRIMARY KEY, Usuario TEXT, Clave TEXT, Tier INT, Correo TEXT, Ultimo_Inicio TEXT)''')
+cursor.execute('''CREATE TABLE IF NOT EXISTS Projects (ID_Proyecto PRIMARY KEY, Nombre TEXT, Creador TEXT, Asignado TEXT, Fecha_Apertura TEXT, Fotos BOOL, Partes BOOL, Subido_Fotos TEXT, Subido_Partes TEXT, Finalizado BOOL)''')
+con.commit()
+ 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 os.chdir("..")
-credentials_AMM = {'Username': 'AMM', 'Password': '1234', 'Tier': 1}
+credentials_AMM = {'Username': 'AMM', 'Password': '1234', 'Tier': 1} # Borrar esto en cuanto esté 100% implementada la base de datos con las claves
 credentials_AFM = {'Username': 'AFM', 'Password': '5678', 'Tier': 0}
 credentials_list = [credentials_AMM, credentials_AFM]
 
@@ -22,13 +30,11 @@ def home():
 		username = request.form.get('Usuario')
 		password = request.form.get('Contraseña')
 		try:
-			credentials_check = False
-			for credentials_dict in credentials_list:
-				if credentials_dict['Username'] == username and credentials_dict['Password'] == password:
-					credentials_check = True
-					return render_template("webpage.htm")
-					break
-			if credentials_check == False: return render_template("iniciarsesion.htm")
+			cursor.execute('''SELECT Clave, Tier FROM Users WHERE Usuario = ?''', (username,))
+			credentials_tuple = cursor.fetchone()
+			if credentials_tuple[0] == password and credentials_tuple[1] >= 0:
+				return render_template("webpage.htm")
+			else: return render_template("iniciarsesion.htm")
 		except:
 			return render_template("iniciarsesion.htm")
 			
@@ -43,13 +49,14 @@ def home():
 def admin():
 	if request.method == "GET":
 		return render_template("iniciarsesion.htm")
-	if request.method == "POST":
+		
+	if request.method == "POST" and request.form.get('Planta') == None:
 		username = request.form.get('Usuario')
 		password = request.form.get('Contraseña')
 		try:
 			credentials_check = False
 			for credentials_dict in credentials_list:
-				if credentials_dict['Username'] == username and credentials_dict['Password'] == password:
+				if credentials_dict['Username'] == username and credentials_dict['Password'] == password and credentials_dict['Tier'] >= 1:
 					credentials_check = True
 					workspaces = client.workspaces.find_all()
 					workspace = list(workspaces)[0]
@@ -62,12 +69,10 @@ def admin():
 			if credentials_check == False: return render_template("iniciarsesion.htm")
 		except:
 			return render_template("iniciarsesion.htm")
+	
+	#elif request.method == "POST" and request.form.get('plant') != None:
+	#	plant = request.form.get('Planta')
+
 
 if __name__ == "__main__":
 	app.run(port=5000)
-
-
-
-
-
-print(project['name'])
