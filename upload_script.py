@@ -3,19 +3,17 @@ from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import sqlite3
 import asana
+import re
 import os
 
 con = sqlite3.connect('Database.db', check_same_thread=False)
 cursor = con.cursor() 
-cursor.execute('''CREATE TABLE IF NOT EXISTS Users (ID_Usuario PRIMARY KEY, Usuario TEXT, Clave TEXT, Tier INT, Correo TEXT, Ultimo_Inicio TEXT)''')
+cursor.execute('''CREATE TABLE IF NOT EXISTS Users (ID_Usuario PRIMARY KEY, Usuario TEXT, Clave TEXT, Tier INT, Nombre TEXT, Correo TEXT, Ultimo_Inicio TEXT)''')
 cursor.execute('''CREATE TABLE IF NOT EXISTS Projects (ID_Proyecto PRIMARY KEY, Nombre TEXT, Creador TEXT, Asignado TEXT, Fecha_Apertura TEXT, Fotos BOOL, Partes BOOL, Subido_Fotos TEXT, Subido_Partes TEXT, Finalizado BOOL)''')
 con.commit()
  
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 os.chdir("..")
-credentials_AMM = {'Username': 'AMM', 'Password': '1234', 'Tier': 1} # Borrar esto en cuanto esté 100% implementada la base de datos con las claves
-credentials_AFM = {'Username': 'AFM', 'Password': '5678', 'Tier': 0}
-credentials_list = [credentials_AMM, credentials_AFM]
 
 app = Flask(__name__)
 app.config['FILE_UPLOADS'] = 'C:/Users/Usuario/Desktop/Proyectos/adrianmudarramartin.github.io/Files'
@@ -54,25 +52,30 @@ def admin():
 		username = request.form.get('Usuario')
 		password = request.form.get('Contraseña')
 		try:
-			credentials_check = False
-			for credentials_dict in credentials_list:
-				if credentials_dict['Username'] == username and credentials_dict['Password'] == password and credentials_dict['Tier'] >= 1:
-					credentials_check = True
-					workspaces = client.workspaces.find_all()
-					workspace = list(workspaces)[0]
-					projects = client.projects.find_all({'workspace': workspace['gid']})
-					plant_list = []
-					for project in projects:
+			cursor.execute('''SELECT Clave, Tier FROM Users WHERE Usuario = ?''', (username,))
+			credentials_tuple = cursor.fetchone()
+			if credentials_tuple[0] == password and credentials_tuple[1] >= 0:
+				workspaces = client.workspaces.find_all()
+				workspace = list(workspaces)[0]
+				projects = client.projects.find_all({'workspace': workspace['gid']})
+				plant_list = []
+				for project in projects:
+					if re.search('^MP|^MC', project['name']):
 						plant_list.append(project['name'])
-					return render_template("admin.htm", plant_list=plant_list)
-					break
-			if credentials_check == False: return render_template("iniciarsesion.htm")
+				cursor.execute('''SELECT Nombre FROM Users''')
+				names_tuples_list = cursor.fetchall()
+				asignee_list = []
+				for names_tuple in names_tuples_list:
+					asignee_list.append(names_tuple[0])
+				print(asignee_list)
+				return render_template("admin.htm", plant_list=sorted(plant_list), username=username, asignee_list=sorted(asignee_list))
+			else: return render_template("iniciarsesion.htm")
 		except:
 			return render_template("iniciarsesion.htm")
 	
-	#elif request.method == "POST" and request.form.get('plant') != None:
-	#	plant = request.form.get('Planta')
-
+	elif request.method == "POST" and request.form.get('Planta') != None and request.form.get('Usuario') != None:
+		plant = request.form.get('Planta')
+		username = request.form.get('Usuario')
 
 if __name__ == "__main__":
 	app.run(port=5000)
