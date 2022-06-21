@@ -8,7 +8,7 @@
     
     <img src="https://spinoff.ugr.es/media/cache/f4/c5/f4c51e95f0844ff5ad1ff4ef22ae4d78.jpg">
     <p></p>
-    <form action="">
+    <form method="post">
         <label for="Usuario">Sesión iniciada como:</label>
         <input type="text" id="Usuario" name="Usuario" value={{username}} readonly/>
         <p></p>
@@ -22,8 +22,8 @@
         <p></p>
         <label for="Asignado">Asignar proyecto a:</label>
         <p></p>
-        {% for asignee in asignee_list %}
-        <input type="checkbox" name={{asignee}}/>{{asignee}}<br>
+        {% for user_id, name in asignee_list %}
+        <input type="checkbox" name=Casilla_Asignado value={{user_id}} onchange="check()"/>{{name}}<br>
         {% endfor %}
         </select>
         <input type="submit" id="submit" value="Abrir caso" disabled/>
@@ -31,7 +31,13 @@
     
     <script>
         function check() {
-            if((document.getElementById("Planta").value === '') and any(checkbox.checked for checkbox in document.querySelectorAll("input[type=checkbox]")) ) {
+            var checkboxes = false;
+            for (let i = 0 ; i<document.querySelectorAll("input[type=checkbox]").length; i++) {
+                if (document.querySelectorAll("input[type=checkbox]")[i].checked === true) {
+                    checkboxes = true;;
+                }
+            }
+            if((document.getElementById("Planta").value === '') || (checkboxes === false)) {
                 document.getElementById("submit").setAttribute("disabled","disabled");;
             } else {
                 document.getElementById("submit").removeAttribute("disabled");;

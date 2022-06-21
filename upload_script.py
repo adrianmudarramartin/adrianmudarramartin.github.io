@@ -8,8 +8,8 @@ import os
 
 con = sqlite3.connect('Database.db', check_same_thread=False)
 cursor = con.cursor() 
-cursor.execute('''CREATE TABLE IF NOT EXISTS Users (ID_Usuario PRIMARY KEY, Usuario TEXT, Clave TEXT, Tier INT, Nombre TEXT, Correo TEXT, Ultimo_Inicio TEXT)''')
-cursor.execute('''CREATE TABLE IF NOT EXISTS Projects (ID_Proyecto PRIMARY KEY, Nombre TEXT, Creador TEXT, Asignado TEXT, Fecha_Apertura TEXT, Fotos BOOL, Partes BOOL, Subido_Fotos TEXT, Subido_Partes TEXT, Finalizado BOOL)''')
+cursor.execute('''CREATE TABLE IF NOT EXISTS Users (ID_Usuario INT PRIMARY KEY AUTOINCREMENT, Usuario TEXT, Clave TEXT, Tier INT, Nombre TEXT, Correo TEXT, Ultimo_Inicio TEXT)''')
+cursor.execute('''CREATE TABLE IF NOT EXISTS Projects (ID_Proyecto INT PRIMARY KEY AUTOINCREMENT, Nombre TEXT, Creador TEXT, Asignado TEXT, Fecha_Apertura TEXT, Fotos BOOL, Partes BOOL, Subido_Fotos TEXT, Subido_Partes TEXT, Finalizado BOOL)''')
 con.commit()
  
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -60,14 +60,14 @@ def admin():
 				projects = client.projects.find_all({'workspace': workspace['gid']})
 				plant_list = []
 				for project in projects:
-					if re.search('^MP|^MC', project['name']):
+					cursor.execute('''SELECT ID_Proyecto FROM Projects WHERE Nombre = ?''', (project['name'],))
+					if re.search('^MP|^MC', project['name']) and cursor.fetchone() == None:
 						plant_list.append(project['name'])
-				cursor.execute('''SELECT Nombre FROM Users''')
-				names_tuples_list = cursor.fetchall()
+				cursor.execute('''SELECT ID_Usuario, Nombre FROM Users''')
+				users_tuples_list = cursor.fetchall()
 				asignee_list = []
-				for names_tuple in names_tuples_list:
-					asignee_list.append(names_tuple[0])
-				print(asignee_list)
+				for users_tuple in users_tuples_list:
+					asignee_list.append(users_tuple)
 				return render_template("admin.htm", plant_list=sorted(plant_list), username=username, asignee_list=sorted(asignee_list))
 			else: return render_template("iniciarsesion.htm")
 		except:
@@ -76,6 +76,9 @@ def admin():
 	elif request.method == "POST" and request.form.get('Planta') != None and request.form.get('Usuario') != None:
 		plant = request.form.get('Planta')
 		username = request.form.get('Usuario')
+		asignee_list = request.form.getlist('Casilla_Asignado')
+		print(asignee_list)
+		cursor.execute('''INSERT INTO Projects VALUES (''')
 
 if __name__ == "__main__":
 	app.run(port=5000)
