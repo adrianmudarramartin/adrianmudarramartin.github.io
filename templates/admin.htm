@@ -16,7 +16,7 @@
         <select name="Planta" id="Planta" onchange="check()">
             <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
             {% for plant in plant_list %}
-            <option value={{plant}}>{{plant}}</option>
+            <option value="{{ plant }}">{{plant}}</option>
             {% endfor %}
         </select>
         <p></p>

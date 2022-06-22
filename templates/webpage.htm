@@ -13,22 +13,26 @@
     
     <p></p>
     <form enctype="multipart/form-data" method="POST">
-	    </select>
-        <label for="file">Archivos a adjuntar:</label>
-        <input type="file" id="file" name="file" multiple="multiple" />
+        <label for="Usuario">Sesión iniciada como:</label>
+        <input type="text" id="Usuario" name="Usuario" value={{username}} readonly/>
+        <p></p>
+        <label for="Archivo">Archivos a adjuntar:</label>
+        <input type="file" id="Archivo" name="Archivo" multiple="multiple" onchange="check()"/>
         <br /><br />
         <p></p>
         <label for="Planta">Instalación fotovoltaica:</label>
         <select name="Planta" id="Planta" onchange="check()">
             <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
-            <option value="Prueba">Prueba</option>
+            {% for name in project_list %}
+            <option value="{{name}}">{{name}}</option>
+            {% endfor %}
         </select>
         <p></p>
         <label for="Tipo">Tipo de archivo:</label>
         <select name="Tipo" id="Tipo" onchange="check()">
             <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
-            <option value="Foto">Foto(s)</option>
-            <option value="Parte">Parte de inspección</option>
+            <option value="FOTOS">Foto(s)</option>
+            <option value="PARTES DE INSPECCION">Parte de inspección</option>
         </select>
         <p></p>
         <input type="submit" id="submit" value="Subir" disabled/>
@@ -36,7 +40,7 @@
     
     <script>
         function check() {
-            if((document.getElementById("Tipo").value === '' || document.getElementById("Planta").value === '')) {
+            if((document.getElementById("Tipo").value === '' || document.getElementById("Planta").value === '' || document.getElementById("Archivo").value === "")) {
                 document.getElementById("submit").setAttribute("disabled","disabled");;
             } else {
                 document.getElementById("submit").removeAttribute("disabled");;
