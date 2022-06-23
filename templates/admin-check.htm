@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+    <body style="background-color:#B1FA93;">
+    <p style="color:#FEFEFE;">
+    <h1></h1>
+    
+    <img src="https://spinoff.ugr.es/media/cache/f4/c5/f4c51e95f0844ff5ad1ff4ef22ae4d78.jpg">
+    <p></p>
+    <form method="post">
+        <label for="Usuario">Sesión iniciada como:</label>
+        <input type="text" id="Usuario" name="Usuario" value={{username}} readonly/>
+        <p></p>
+        <label for="Planta">Seleccione una incidencia para abrir:</label>
+        <select name="Planta" id="Planta" onchange="check()">
+            <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
+            {% for plant in plant_list %}
+            <option value="{{ plant }}">{{plant}}</option>
+            {% endfor %}
+        </select>
+        <p></p>
+        <label for="Asignado">Asignar proyecto a:</label>
+        <p></p>
+        {% for user_id, name in asignee_list %}
+        <input type="checkbox" name=Casilla_Asignado value={{user_id}} onchange="check()"/>{{name}}<br>
+        {% endfor %}
+        </select>
+        <input type="submit" id="submit" value="Abrir caso" disabled/>
+    </form>
+    
+    <script>
+        function check() {
+            var checkboxes = false;
+            for (let i = 0 ; i<document.querySelectorAll("input[type=checkbox]").length; i++) {
+                if (document.querySelectorAll("input[type=checkbox]")[i].checked === true) {
+                    checkboxes = true;;
+                }
+            }
+            if((document.getElementById("Planta").value === '') || (checkboxes === false)) {
+                document.getElementById("submit").setAttribute("disabled","disabled");;
+            } else {
+                document.getElementById("submit").removeAttribute("disabled");;
+            }
+        }
+    </script>
+</body>
+</html>

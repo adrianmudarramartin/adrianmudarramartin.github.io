@@ -10,7 +10,12 @@
         <input type="text" name="Usuario" id="uname"/>
         <label for="password">Contraseña:</label>
           <input type="text" name="Contraseña" id="pword"/>
-        <input type="submit" value="Iniciar sesión"/>
+        {% if admin == False %}
+        <input type="submit" name="submit" value="Iniciar sesión"/>
+        {% else %}
+        <input type="submit" name="submit" value="Abrir caso"/>
+        <input type="submit" name="submit" value="Revisar caso"/>
+        {% endif %}
     </form>
 </body>
 </html>
