@@ -120,9 +120,26 @@ def admin():
 			cursor.execute('''SELECT ID_Usuario, Clave, Tier FROM Users WHERE Usuario = ?''', (username,))
 			credentials_tuple = cursor.fetchone()
 			if credentials_tuple[1] == password and credentials_tuple[2] >= 1:
-				cursor.execute('''SELECT ID_Proyecto, Nombre FROM Projects''')
+				cursor.execute('''SELECT ID_Proyecto, Nombre, Finalizado FROM Projects''')
+				projects_tuple_list = cursor.fetchall()
+				plant_list = []
+				for projects_tuple in projects_tuple_list:
+					if projects_tuple[2] == False: plant_list.append(projects_tuple[1])
+				return render_template("admin-check.htm", username=username, plant_list=plant_list)
 				
 		except Exception as e:
 			return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
+	
+	if request.method == "POST" and request.form['submit'] == 'Ver fotos':
+		print('Yes')
+		plant = request.form.get('Planta')
+		username = request.form.get('Usuario')
+		file_dirlist = os.listdir(plant)
+		for element in file_dirlist:
+			indx = file_dirlist.index(element)
+			file_dirlist[indx] = os.path.dirname(os.path.abspath(__file__))+'/'+plant+'/FOTOS'
+		print(file_dirlist)
+		return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
+
 if __name__ == "__main__":
 	app.run(port=5000)

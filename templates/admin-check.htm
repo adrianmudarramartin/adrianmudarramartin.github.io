@@ -12,36 +12,51 @@
         <label for="Usuario">Sesión iniciada como:</label>
         <input type="text" id="Usuario" name="Usuario" value={{username}} readonly/>
         <p></p>
-        <label for="Planta">Seleccione una incidencia para abrir:</label>
+        <label for="Planta">Seleccione una incidencia para revisar:</label>
         <select name="Planta" id="Planta" onchange="check()">
             <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
             {% for plant in plant_list %}
             <option value="{{ plant }}">{{plant}}</option>
             {% endfor %}
         </select>
-        <p></p>
-        <label for="Asignado">Asignar proyecto a:</label>
-        <p></p>
-        {% for user_id, name in asignee_list %}
-        <input type="checkbox" name=Casilla_Asignado value={{user_id}} onchange="check()"/>{{name}}<br>
-        {% endfor %}
-        </select>
-        <input type="submit" id="submit" value="Abrir caso" disabled/>
+        <input type="submit" id="submit" value="Ver fotos" disabled/>
     </form>
     
     <script>
         function check() {
-            var checkboxes = false;
-            for (let i = 0 ; i<document.querySelectorAll("input[type=checkbox]").length; i++) {
-                if (document.querySelectorAll("input[type=checkbox]")[i].checked === true) {
-                    checkboxes = true;;
-                }
-            }
-            if((document.getElementById("Planta").value === '') || (checkboxes === false)) {
+            try {
+
+            if((document.getElementById("Planta").value === '')) {
                 document.getElementById("submit").setAttribute("disabled","disabled");;
             } else {
+                //document.getElementById("suu").innerHTML = "Entrando..."
+                //var scripts = document.getElementsByTagName('script');
+                //var path= scripts[scripts.length-1].src.split('?')[0];      // remove any ?query
+                //var mydir= path.split('/').slice(0, -1).join('/')+'/';  // remove last filename part of path
+                //document.getElementById("suu").innerHTML = path
+                //process.chdir(__dirname)
+                //document.chdir(__dirname)
+                //document.getElementById("suu").innerHTML = "Tomando dir..."
+                //document.chdir('../');
+                //document.getElementById("suu").innerHTML = "Tomando dir 1.5..."
+                //document.chdir(string.concat(document.cwd(),'/Files/', document.getElementById("Planta"),"/FOTOS"));
+                //document.getElementById("suu").innerHTML = "Tomando dir 2..."
+                //var fs = require('fs');
+                //var files = fs.readdirSync(document.cwd());
+                //for(let i=0; i<len(files); i++) {
+                //    var createImage = document.createElement("img");
+                //    createImage.setAttribute("src",string.concat(document.cwd(), "/", file[i]));
+                //}
                 document.getElementById("submit").removeAttribute("disabled");;
             }
+            }
+            catch(err) {
+            document.getElementById("suu").innerHTML = err.message;
+        }
+        }
+
+        function showFiles() {
+            
         }
     </script>
 </body>
