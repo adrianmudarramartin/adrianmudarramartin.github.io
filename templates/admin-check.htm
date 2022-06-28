@@ -6,9 +6,9 @@
     <p style="color:#FEFEFE;">
     <h1></h1>
     
-    <img src="https://spinoff.ugr.es/media/cache/f4/c5/f4c51e95f0844ff5ad1ff4ef22ae4d78.jpg">
+    <img src="http:\\localhost\Users\Usuario\Desktop\Proyectos\adrianmudarramartin.github.io\Files\MP-22-003_ MP EJIDOLUZ\FOTOS\Hola.jpg" alt="Hi!">
     <p></p>
-    <form method="post">
+    <form method="POST">
         <label for="Usuario">Sesión iniciada como:</label>
         <input type="text" id="Usuario" name="Usuario" value={{username}} readonly/>
         <p></p>
@@ -19,9 +19,12 @@
             <option value="{{ plant }}">{{plant}}</option>
             {% endfor %}
         </select>
-        <input type="submit" id="submit" value="Ver fotos" disabled/>
+        <input type="submit" name="submit" id="submit" value="Ver fotos" disabled/>
     </form>
-    
+    <p></p>
+    {% for file_dir in file_dirlist %}
+    <img src="{{file_dir}}">"
+    {% endfor %}
     <script>
         function check() {
             try {

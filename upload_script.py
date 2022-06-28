@@ -24,7 +24,8 @@ client = asana.Client.access_token('1/1202152890606392:57a2152dee423466ce283d2b8
 def home():
 	if request.method == "GET":
 		return render_template("iniciarsesion.htm", admin=False)
-	if request.method == "POST" and request.files.getlist('Archivo') == []:
+	
+	elif request.method == "POST" and request.form['submit'] == "Iniciar sesión":
 		username = request.form.get('Usuario')
 		password = request.form.get('Contraseña')
 		try:
@@ -43,7 +44,7 @@ def home():
 		except Exception as e:
 			return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=False)
 			 
-	elif request.method == "POST" and request.form['submit'] == "Iniciar sesión":
+	elif request.method == "POST" and request.form['submit'] == "Subir archivos":
 		plant = request.form.get('Planta')
 		username = request.form.get('Usuario')
 		cursor.execute('''SELECT ID_Usuario FROM Users WHERE Usuario = ?''', (username,))
@@ -76,7 +77,7 @@ def admin():
 	if request.method == "GET":
 		return render_template("iniciarsesion.htm", admin=True)
 		
-	if request.method == "POST" and request.form['submit'] == 'Abrir caso':
+	elif request.method == "POST" and request.form['submit'] == 'Abrir caso':
 		username = request.form.get('Usuario')
 		password = request.form.get('Contraseña')
 		try:
@@ -102,7 +103,7 @@ def admin():
 		except Exception as e:
 			return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
 	
-	elif request.method == "POST" and request.form.get('Planta') != None and request.form.get('Usuario') != None:
+	elif request.method == "POST" and request.form['submit'] == "Confirmar apertura":
 		plant = request.form.get('Planta')
 		username = request.form.get('Usuario')
 		cursor.execute('''SELECT ID_Usuario FROM Users WHERE Usuario = ?''', (username,))
@@ -113,7 +114,7 @@ def admin():
 		con.commit()
 		return render_template("iniciarsesion.htm", info='Proyecto abierto correctamente', admin=True)
 
-	if request.method == "POST" and request.form['submit'] == 'Revisar caso':
+	elif request.method == "POST" and request.form['submit'] == "Revisar caso":
 		username = request.form.get('Usuario')
 		password = request.form.get('Contraseña')
 		try:
@@ -125,21 +126,28 @@ def admin():
 				plant_list = []
 				for projects_tuple in projects_tuple_list:
 					if projects_tuple[2] == False: plant_list.append(projects_tuple[1])
-				return render_template("admin-check.htm", username=username, plant_list=plant_list)
+				return render_template("admin-check.htm", username=username, plant_list=plant_list, file_dirlist=[])
 				
 		except Exception as e:
 			return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
 	
-	if request.method == "POST" and request.form['submit'] == 'Ver fotos':
-		print('Yes')
+	elif request.method == "POST" and request.form['submit'] == "Ver fotos":
 		plant = request.form.get('Planta')
 		username = request.form.get('Usuario')
-		file_dirlist = os.listdir(plant)
+		
+		cursor.execute('''SELECT ID_Proyecto, Nombre, Finalizado FROM Projects''')
+		projects_tuple_list = cursor.fetchall()
+		plant_list = []
+		for projects_tuple in projects_tuple_list:
+			if projects_tuple[2] == False: plant_list.append(projects_tuple[1])
+		
+		file_dirlist = os.listdir(os.getcwd()+'\\Files\\'+plant+'\\FOTOS')
+		#print(file_dirlist)
 		for element in file_dirlist:
 			indx = file_dirlist.index(element)
-			file_dirlist[indx] = os.path.dirname(os.path.abspath(__file__))+'/'+plant+'/FOTOS'
+			file_dirlist[indx] = os.path.dirname(os.getcwd()).replace('\\','/')+'/Files/'+plant+'/FOTOS/'+element
 		print(file_dirlist)
-		return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
+		return render_template("admin-check.htm", username=username, plant_list=plant_list,file_dirlist=file_dirlist)
 
 if __name__ == "__main__":
 	app.run(port=5000)
