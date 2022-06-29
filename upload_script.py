@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import sqlite3
 import asana
 import re
-import os
+import sys, os
 from datetime import datetime
 
 con = sqlite3.connect('Database.db', check_same_thread=False)
@@ -15,7 +15,7 @@ con.commit()
  
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='C:\\')
 app.config['FILE_UPLOADS'] = os.path.dirname(os.path.abspath(__file__))+'\\Files'
 
 client = asana.Client.access_token('1/1202152890606392:57a2152dee423466ce283d2b8a3c70f5')
@@ -75,6 +75,7 @@ def home():
 @app.route("/admin", methods=['GET', 'POST'])
 def admin():
 	if request.method == "GET":
+		print(app.static_folder+'   | |   '+app.root_path)
 		return render_template("iniciarsesion.htm", admin=True)
 		
 	elif request.method == "POST" and request.form['submit'] == 'Abrir caso':
@@ -85,11 +86,11 @@ def admin():
 			credentials_tuple = cursor.fetchone()
 			if credentials_tuple[1] == password and credentials_tuple[2] >= 1:
 				workspaces = client.workspaces.find_all()
-				workspace = list(workspaces)[0]
+				workspace = list(workspaces)
 				projects = client.projects.find_all({'workspace': workspace['gid']})
 				plant_list = []
 				for project in projects:
-					cursor.execute('''SELECT ID_Proyecto FROM Projects WHERE Nombre = ?''', (project['name'],))
+					cursor.execute('''SELECT Finalizado FROM Projects WHERE Nombre = ?''', (project['name'],))
 					project_id = cursor.fetchone()
 					if re.search('^MP|^MC', project['name']) and project_id == None:
 						plant_list.append(project['name'])
@@ -101,6 +102,9 @@ def admin():
 				return render_template("admin-open.htm", plant_list=sorted(plant_list), username=username, asignee_list=sorted(asignee_list))
 			else: return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
 		except Exception as e:
+			exc_type, exc_obj, exc_tb = sys.exc_info()
+			name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+			print(exc_type, exc_obj, exc_tb.tb_lineno)
 			return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
 	
 	elif request.method == "POST" and request.form['submit'] == "Confirmar apertura":
@@ -126,9 +130,10 @@ def admin():
 				plant_list = []
 				for projects_tuple in projects_tuple_list:
 					if projects_tuple[2] == False: plant_list.append(projects_tuple[1])
-				return render_template("admin-check.htm", username=username, plant_list=plant_list, file_dirlist=[])
+				return render_template("admin-check.htm", selected_plant=None, username=username, plant_list=plant_list, pictures_file_dirlist=[], dispatches_file_dirlist=[])
 				
 		except Exception as e:
+			print(e)
 			return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
 	
 	elif request.method == "POST" and request.form['submit'] == "Ver fotos":
@@ -141,13 +146,20 @@ def admin():
 		for projects_tuple in projects_tuple_list:
 			if projects_tuple[2] == False: plant_list.append(projects_tuple[1])
 		
-		file_dirlist = os.listdir(os.getcwd()+'\\Files\\'+plant+'\\FOTOS')
-		#print(file_dirlist)
-		for element in file_dirlist:
-			indx = file_dirlist.index(element)
-			file_dirlist[indx] = os.path.dirname(os.getcwd()).replace('\\','/')+'/Files/'+plant+'/FOTOS/'+element
-		print(file_dirlist)
-		return render_template("admin-check.htm", username=username, plant_list=plant_list,file_dirlist=file_dirlist)
+		pictures_file_dirlist = os.listdir('Files\\'+plant+'\\FOTOS')
+		dispatches_file_dirlist = os.listdir('Files\\'+plant+'\\PARTES DE INSPECCION')
+		#print(pictures_file_dirlist)
+		for element in pictures_file_dirlist:
+			indx = pictures_file_dirlist.index(element)
+			pictures_file_dirlist[indx] = ('Files/'+plant+'/FOTOS/'+element, element)
+		for element in dispatches_file_dirlist:
+			indx = dispatches_file_dirlist.index(element)
+			dispatches_file_dirlist[indx] = ('Files/'+plant+'/PARTES DE INSPECCION/'+element, element)
+		#print(pictures_file_dirlist, '\n-------\n')
+		#print(dispatches_file_dirlist)
+		return render_template("admin-check.htm", username=username, selected_plant=plant, plant_list=plant_list, pictures_file_dirlist=pictures_file_dirlist, dispatches_file_dirlist=dispatches_file_dirlist)
 
+	elif request.method == "POST" and request.form['submit'] == "Aprobar y cerrar caso":
+		cursor.execute('''UPDATE Projects SET Finalizado = 1 WHERE Nombre = ?''', (plant, ))
 if __name__ == "__main__":
 	app.run(port=5000)

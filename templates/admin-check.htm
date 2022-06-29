@@ -6,7 +6,7 @@
     <p style="color:#FEFEFE;">
     <h1></h1>
     
-    <img src="http:\\localhost\Users\Usuario\Desktop\Proyectos\adrianmudarramartin.github.io\Files\MP-22-003_ MP EJIDOLUZ\FOTOS\Hola.jpg" alt="Hi!">
+    <img src="https://spinoff.ugr.es/media/cache/f4/c5/f4c51e95f0844ff5ad1ff4ef22ae4d78.jpg" width="500" height="auto">
     <p></p>
     <form method="POST">
         <label for="Usuario">Sesión iniciada como:</label>
@@ -16,14 +16,43 @@
         <select name="Planta" id="Planta" onchange="check()">
             <option disabled selected value>-- ELIGE UNA OPCIÓN --</option>
             {% for plant in plant_list %}
+            {% if selected_plant == plant%}
+            <option value="{{ plant }}" selected>{{plant}}</option>
+            {% else %}
             <option value="{{ plant }}">{{plant}}</option>
+            {% endif %}
             {% endfor %}
         </select>
         <input type="submit" name="submit" id="submit" value="Ver fotos" disabled/>
     </form>
-    <p></p>
-    {% for file_dir in file_dirlist %}
-    <img src="{{file_dir}}">"
+
+    <h2>Fotos/Vídeos</h2>
+    {% for file_dir, file_name in pictures_file_dirlist %}
+    {% if file_name.split('.')[-1] in ['png','jpg', 'jpeg'] %}
+    <p>
+        <img src="{{file_dir}}" width="600" height="auto"><a href="{{file_dir}}" download>Descargar Foto/Video: {{file_name}}</a>
+    </p>
+    {% else %}
+    <p>
+        <a href="{{file_dir}}" download>Descargar Foto/Video: {{file_name}}</a>
+    </p>
+    {% endif %}
+    {% endfor %}
+    <h2>Partes de inspección</h2>
+    {% for file_dir, file_name in dispatches_file_dirlist %}
+    {% if (file_dir, file_name) == dispatches_file_dirlist[-1] %}
+    <p>
+        <a href="{{file_dir}}" download>Descargar Parte: {{file_name}}</a>
+    </p>
+    <form type="post">
+        <input type="submit" name="submit" id="submit" value="Aprobar y cerrar caso">
+    </form>
+    
+    {% else %}
+    <p>
+        <a href="{{file_dir}}" download>Descargar Parte: {{file_name}}</a>
+    </p>
+    {% endif %}
     {% endfor %}
     <script>
         function check() {
