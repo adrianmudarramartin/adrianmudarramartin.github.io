@@ -75,7 +75,7 @@ def home():
 @app.route("/admin", methods=['GET', 'POST'])
 def admin():
 	if request.method == "GET":
-		print(app.static_folder+'   | |   '+app.root_path)
+		#print(app.static_folder+'   | |   '+app.root_path)
 		return render_template("iniciarsesion.htm", admin=True)
 		
 	elif request.method == "POST" and request.form['submit'] == 'Abrir caso':
@@ -86,13 +86,14 @@ def admin():
 			credentials_tuple = cursor.fetchone()
 			if credentials_tuple[1] == password and credentials_tuple[2] >= 1:
 				workspaces = client.workspaces.find_all()
-				workspace = list(workspaces)
+				workspace = list(workspaces)[0]
 				projects = client.projects.find_all({'workspace': workspace['gid']})
 				plant_list = []
 				for project in projects:
 					cursor.execute('''SELECT Finalizado FROM Projects WHERE Nombre = ?''', (project['name'],))
-					project_id = cursor.fetchone()
-					if re.search('^MP|^MC', project['name']) and project_id == None:
+					finished = cursor.fetchone()
+					#print(finished)
+					if re.search('^MP|^MC', project['name']) and finished != (1,):
 						plant_list.append(project['name'])
 				cursor.execute('''SELECT ID_Usuario, Nombre FROM Users''')
 				users_tuples_list = cursor.fetchall()
@@ -102,9 +103,9 @@ def admin():
 				return render_template("admin-open.htm", plant_list=sorted(plant_list), username=username, asignee_list=sorted(asignee_list))
 			else: return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
 		except Exception as e:
-			exc_type, exc_obj, exc_tb = sys.exc_info()
-			name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-			print(exc_type, exc_obj, exc_tb.tb_lineno)
+			#exc_type, exc_obj, exc_tb = sys.exc_info()
+			#name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+			#print(exc_type, exc_obj, exc_tb.tb_lineno)
 			return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
 	
 	elif request.method == "POST" and request.form['submit'] == "Confirmar apertura":
@@ -133,7 +134,7 @@ def admin():
 				return render_template("admin-check.htm", selected_plant=None, username=username, plant_list=plant_list, pictures_file_dirlist=[], dispatches_file_dirlist=[])
 				
 		except Exception as e:
-			print(e)
+			#print(e)
 			return render_template("iniciarsesion.htm", info='Usuario o contraseña incorrectos. Inténtelo de nuevo', admin=True)
 	
 	elif request.method == "POST" and request.form['submit'] == "Ver fotos":
@@ -160,6 +161,11 @@ def admin():
 		return render_template("admin-check.htm", username=username, selected_plant=plant, plant_list=plant_list, pictures_file_dirlist=pictures_file_dirlist, dispatches_file_dirlist=dispatches_file_dirlist)
 
 	elif request.method == "POST" and request.form['submit'] == "Aprobar y cerrar caso":
+		plant = request.form.get('Planta')
+		username = request.form.get('Usuario')
 		cursor.execute('''UPDATE Projects SET Finalizado = 1 WHERE Nombre = ?''', (plant, ))
+		workspaces = client.workspaces.find_all()
+		workspace = list(workspaces)[0]
+		projects = client.projects.find_all({'workspace': workspace['gid']})
 if __name__ == "__main__":
 	app.run(port=5000)

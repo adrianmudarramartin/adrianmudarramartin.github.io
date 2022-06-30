@@ -25,6 +25,7 @@
         {% for user_id, name in asignee_list %}
         <input type="checkbox" name=Casilla_Asignado value={{user_id}} onchange="check()"/>{{name}}<br>
         {% endfor %}
+        <p></p>
         <input type="submit" name="submit" id="submit" value="Confirmar apertura" disabled/>
     </form>
 
