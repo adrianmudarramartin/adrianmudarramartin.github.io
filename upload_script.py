@@ -167,5 +167,20 @@ def admin():
 		workspaces = client.workspaces.find_all()
 		workspace = list(workspaces)[0]
 		projects = client.projects.find_all({'workspace': workspace['gid']})
+		project_gid = None
+		for project in projects:
+			if project['name'] == plant: 
+				project_gid = project['gid']
+				break
+		tasks = client.tasks.get_tasks_for_project(project_gid)
+		task_gid = None
+		for task in tasks:
+			if project['name'] == 'Fotos': 
+				task_gid = task['gid']
+				break
+		subtask = client.tasks.create_subtask_for_task(task_gid)
+		# create_attachment_for_task
+
+
 if __name__ == "__main__":
 	app.run(port=5000)
